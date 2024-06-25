@@ -4,4 +4,6 @@ main: '${main}'
 api-version: 1.13
 load: POSTWORLD
 authors: [ YufiriaMazenta ]
+depends:
+  - ParticleLib
 folia-supported: true

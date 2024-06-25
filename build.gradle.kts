@@ -3,35 +3,36 @@ import java.text.SimpleDateFormat
 plugins {
     id("java-library")
     id("maven-publish")
-    id("com.github.johnrengelman.shadow").version("7.1.2")
+    id("io.github.goooler.shadow").version("8.1.7")
 }
 
 repositories {
     mavenLocal()
     //PlaceholderAPI
     maven("https://repo.dmulloy2.net/repository/public/")
-    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://oss.sonatype.org/content/groups/public/")
     maven("https://repo.maven.apache.org/maven2/")
     maven("http://repo.crypticlib.com:8081/repository/maven-public/") {
         isAllowInsecureProtocol = true
     }
+    maven("https://www.jitpack.io")
     mavenCentral()
 }
 
 dependencies {
+    compileOnly("com.github.602723113:ParticleLib:1.5.1")
     compileOnly("org.jetbrains:annotations:24.0.1")
-    compileOnly("org.spigotmc:spigot-api:1.20-R0.1-SNAPSHOT")
-    compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
-    implementation("com.crypticlib:CrypticLib:0.16.6")
+    compileOnly("io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT")
+    implementation("com.crypticlib:common:0.18.8")
 }
 
-group = "com.example"
+group = "pers.yufiria"
 version = "1.0.0"
-var mainClass = "${rootProject.group}.${rootProject.name.lowercase()}.Example"
+var mainClass = "pers.yufiria.projectrace.ProjectRaceBukkit"
 var pluginVersion: String = version.toString() + "-" + SimpleDateFormat("yyyyMMdd").format(System.currentTimeMillis())
-java.sourceCompatibility = JavaVersion.VERSION_1_8
-java.targetCompatibility = JavaVersion.VERSION_1_8
+java.sourceCompatibility = JavaVersion.VERSION_21
+java.targetCompatibility = JavaVersion.VERSION_21
 
 publishing {
     publications.create<MavenPublication>("maven") {
