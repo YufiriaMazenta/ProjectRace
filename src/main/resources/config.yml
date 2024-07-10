@@ -1,0 +1,19 @@
+race-tick-duration: 1
+
+vampire:
+  name: "&d吸血鬼"
+  max-level: 10
+  attribute-modifiers:
+    max-health:
+      0: 0
+      1: 1
+      2: 2
+      3: 3
+      4: 4
+      5: 5
+      6: 6
+      7: 7
+      8: 8
+      9: 9
+      10: 10
+  sucking-rate: 0.25

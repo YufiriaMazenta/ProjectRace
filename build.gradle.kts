@@ -23,8 +23,9 @@ repositories {
 dependencies {
     compileOnly("com.github.602723113:ParticleLib:1.5.1")
     compileOnly("org.jetbrains:annotations:24.0.1")
-    compileOnly("io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT")
-    implementation("com.crypticlib:common:0.18.8")
+    compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
+    implementation("com.crypticlib:bukkit:1.0.3")
+    implementation("com.zaxxer:HikariCP:5.1.0")
 }
 
 group = "pers.yufiria"
@@ -54,7 +55,11 @@ tasks {
         options.encoding = "UTF-8"
     }
     shadowJar {
-        relocate("crypticlib", "${rootProject.group}.${rootProject.name.lowercase()}.crypticlib")
+        relocate("crypticlib", "pers.yufiria.projectrace.crypticlib")
+        relocate("com.zaxxer.hikari", "pers.yufiria.projectrace.hikari")
+        dependencies {
+            exclude(dependency("org.slf4j:slf4j-api"))
+        }
         archiveFileName.set("${rootProject.name}-${version}.jar")
     }
     assemble {

@@ -1,7 +1,6 @@
 package pers.yufiria.projectrace;
 
 import crypticlib.BukkitPlugin;
-import crypticlib.annotation.AnnotationProcessor;
 
 public class ProjectRaceBukkit extends BukkitPlugin {
 
