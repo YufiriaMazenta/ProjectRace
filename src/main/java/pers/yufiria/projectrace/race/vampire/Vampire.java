@@ -38,6 +38,7 @@ public class Vampire implements Race, BukkitEnabler, BukkitReloader {
     private List<PotionEffect> nightPotionEffects = new ArrayList<>();
     private Map<Integer, Double> suckingRateMap = new ConcurrentHashMap<>();
     private Map<Integer, Double> levelUpExpMap = new ConcurrentHashMap<>();
+    private NamespacedKey vampireMaxHealthModifierKey = new NamespacedKey("projectrace", id() + ".max_health");
 
     @Override
     public @NotNull String id() {
@@ -59,7 +60,7 @@ public class Vampire implements Race, BukkitEnabler, BukkitReloader {
         if (maxHealthModifierValueMap.containsKey(level)) {
             double value = maxHealthModifierValueMap.get(level);
             return new AttributeModifier(
-                new NamespacedKey(ProjectRaceBukkit.INSTANCE, id() + ".max_health"),
+                vampireMaxHealthModifierKey,
                 value,
                 AttributeModifier.Operation.ADD_NUMBER,
                 EquipmentSlotGroup.ANY

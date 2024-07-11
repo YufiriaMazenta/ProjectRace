@@ -24,23 +24,20 @@ public class AttributeHelper {
         }
     }
 
-    public static void removeAttributeModifierByKey(Player player, Attribute attribute, NamespacedKey key) {
+    public static void addAttributeModifier(Player player, Attribute attribute, AttributeModifier modifier) {
         AttributeInstance attributeIns = player.getAttribute(attribute);
         if (attributeIns == null) {
             return;
         }
-        for (AttributeModifier modifier : attributeIns.getModifiers()) {
-            if (modifier.getKey().equals(key)) {
-                attributeIns.removeModifier(modifier);
+        for (AttributeModifier originModifier : attributeIns.getModifiers()) {
+            if (originModifier.getKey().equals(modifier.getKey())) {
+                if (originModifier.getAmount() == modifier.getAmount()) {
+                    //相同就不设置了
+                    return;
+                }
+                attributeIns.removeModifier(originModifier);
             }
         }
-    }
-
-    public static void addAttributeModifier(Player player, Attribute attribute, AttributeModifier modifier) {
-        removeAttributeModifierByKey(player, attribute, modifier.getKey());
-        AttributeInstance attributeIns = player.getAttribute(attribute);
-        if (attributeIns == null)
-            return;
         attributeIns.addModifier(modifier);
     }
 

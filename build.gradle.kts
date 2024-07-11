@@ -8,14 +8,14 @@ plugins {
 
 repositories {
     mavenLocal()
-    //PlaceholderAPI
-    maven("https://repo.dmulloy2.net/repository/public/")
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://oss.sonatype.org/content/groups/public/")
     maven("https://repo.maven.apache.org/maven2/")
     maven("http://repo.crypticlib.com:8081/repository/maven-public/") {
         isAllowInsecureProtocol = true
     }
+    //PlaceholderAPI
+    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
     maven("https://www.jitpack.io")
     mavenCentral()
 }
@@ -23,8 +23,9 @@ repositories {
 dependencies {
     compileOnly("com.github.602723113:ParticleLib:1.5.1")
     compileOnly("org.jetbrains:annotations:24.0.1")
+    compileOnly("me.clip:placeholderapi:2.11.6")
     compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
-    implementation("com.crypticlib:bukkit:1.0.5")
+    implementation("com.crypticlib:bukkit:1.0.6")
     implementation("com.zaxxer:HikariCP:5.1.0")
 }
 

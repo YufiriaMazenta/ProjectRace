@@ -14,6 +14,7 @@ import java.util.function.Supplier;
 public class Configs {
 
     public static final IntConfig raceTickDuration = new IntConfig("race-tick-duration", 1, "种族任务的tick间隔");
+    public static final StringConfig raceExpPapiFormat = new StringConfig("race-exp-papi-format", "%.2f", "种族经验在papi变量里的格式");
 
     public static final StringConfig vampireName = new StringConfig("vampire.name", "&d吸血鬼", "吸血鬼的种族名字");
     public static final IntConfig vampireMaxLevel = new IntConfig("vampire.max-level", 10, "吸血鬼的种族最大等级");

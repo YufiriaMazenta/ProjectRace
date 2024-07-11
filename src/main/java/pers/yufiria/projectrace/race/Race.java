@@ -67,7 +67,8 @@ public interface Race {
             double healthPercent = originHealth / originMaxHealth;
             AttributeHelper.addAttributeModifier(player, Attribute.GENERIC_MAX_HEALTH, maxHealthModifier);
             double changedMaxHealth = maxHealthAttr.getValue();
-            player.setHealth(changedMaxHealth * healthPercent);
+            if (originMaxHealth != changedMaxHealth)
+                player.setHealth(changedMaxHealth * healthPercent);
         }
 
         //触及半径

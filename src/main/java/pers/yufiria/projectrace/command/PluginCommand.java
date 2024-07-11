@@ -14,11 +14,14 @@ import org.jetbrains.annotations.NotNull;
 import pers.yufiria.projectrace.PlayerRace;
 import pers.yufiria.projectrace.ProjectRaceBukkit;
 import pers.yufiria.projectrace.RaceManager;
+import pers.yufiria.projectrace.command.sub.RaceExpCommand;
 import pers.yufiria.projectrace.config.LangConfig;
 import pers.yufiria.projectrace.race.Race;
 import pers.yufiria.projectrace.util.AttributeHelper;
+import pers.yufiria.projectrace.util.Utils;
 
 import java.util.List;
+import java.util.Map;
 
 @Command
 public class PluginCommand extends BukkitCommand {
@@ -39,37 +42,49 @@ public class PluginCommand extends BukkitCommand {
     };
 
     @Subcommand
-    BukkitSubCommand setRace = new BukkitSubCommand("setRace", new PermInfo("race.command.setRace")) {
+    BukkitSubCommand setRace = new BukkitSubCommand("setRace", new PermInfo("race.command.set-race")) {
         @Override
         public void execute(@NotNull CommandSender commandSender, @NotNull List<String> args) {
+            if (args.isEmpty()) {
+                BukkitMsgSender.INSTANCE.sendMsg(commandSender, LangConfig.commandMissingPlayerName.value());
+                return;
+            }
             if (args.size() < 2) {
-                BukkitMsgSender.INSTANCE.sendMsg(commandSender, "Missing args.");
+                BukkitMsgSender.INSTANCE.sendMsg(commandSender, LangConfig.commandSetRaceMissingRace.value());
                 return;
             }
             String playerName = args.get(0);
             String raceId = args.get(1);
             Player player = Bukkit.getPlayer(playerName);
             if (player == null) {
-                BukkitMsgSender.INSTANCE.sendMsg(commandSender, "Player " + playerName + " is not online!");
+                BukkitMsgSender.INSTANCE.sendMsg(commandSender, LangConfig.commandPlayerOffline.value());
                 return;
             }
             Race race = RaceManager.INSTANCE.getRace(raceId);
             if (race == null) {
-                BukkitMsgSender.INSTANCE.sendMsg(commandSender, "Unknown race " + raceId);
+                BukkitMsgSender.INSTANCE.sendMsg(
+                    commandSender,
+                    LangConfig.commandSetRaceNotExistRace.value(),
+                    Map.of("%race%", raceId)
+                );
                 return;
             }
             PlayerRace playerRace = new PlayerRace(player.getUniqueId(), raceId, 0);
             AttributeHelper.removePlayerAllRaceAttribute(player);
             RaceManager.INSTANCE.setPlayerRaceCache(player.getUniqueId(), playerRace);
-            BukkitMsgSender.INSTANCE.sendMsg(commandSender, "Set player " + playerName + "'s race to " + race.name());
             RaceManager.INSTANCE.dataAccessor().setPlayerRace(player.getUniqueId(), playerRace);
+            BukkitMsgSender.INSTANCE.sendMsg(
+                commandSender,
+                LangConfig.commandSetRaceSuccess.value(),
+                Map.of("%player%", playerName, "%race%", race.name())
+            );
         }
 
         @Override
         public @NotNull List<String> tab(@NotNull CommandSender commandSender, @NotNull List<String> args) {
             switch (args.size()) {
                 case 0, 1 -> {
-                    return Bukkit.getOnlinePlayers().stream().map(Player::getName).toList();
+                    return Utils.getPlayerNames();
                 }
                 case 2 -> {
                     return RaceManager.INSTANCE.raceMap().keySet().stream().toList();
@@ -82,40 +97,49 @@ public class PluginCommand extends BukkitCommand {
     };
 
     @Subcommand
-    BukkitSubCommand setRaceLevel = new BukkitSubCommand("setRaceLevel", new PermInfo("race.command.setRaceLevel")) {
+    BukkitSubCommand setLevel = new BukkitSubCommand("setLevel", new PermInfo("race.command.set-level")) {
         @Override
         public void execute(@NotNull CommandSender commandSender, @NotNull List<String> args) {
+            if (args.isEmpty()) {
+                BukkitMsgSender.INSTANCE.sendMsg(commandSender, LangConfig.commandMissingPlayerName.value());
+                return;
+            }
             if (args.size() < 2) {
-                BukkitMsgSender.INSTANCE.sendMsg(commandSender, "Missing args.");
+                BukkitMsgSender.INSTANCE.sendMsg(commandSender, LangConfig.commandSetLevelMissingLevel.value());
                 return;
             }
             String playerName = args.getFirst();
             Player player = Bukkit.getPlayer(playerName);
             if (player == null) {
-                BukkitMsgSender.INSTANCE.sendMsg(commandSender, "Player " + playerName + " is not online!");
+                BukkitMsgSender.INSTANCE.sendMsg(commandSender, LangConfig.commandPlayerOffline.value());
                 return;
             }
             int level;
             try {
                 level = Integer.parseInt(args.get(1));
             } catch (NumberFormatException e) {
-                level = 0;
+                BukkitMsgSender.INSTANCE.sendMsg(commandSender, LangConfig.commandSetLevelNumberFormatFailed.value());
+                return;
             }
 
             PlayerRace playerRace = RaceManager.INSTANCE.getPlayerRace(player.getUniqueId());
             if (playerRace == null) {
-                BukkitMsgSender.INSTANCE.sendMsg(commandSender, "Player do not have race ");
+                BukkitMsgSender.INSTANCE.sendMsg(commandSender, LangConfig.commandSetLevelPlayerNoRace.value());
                 return;
             }
-            playerRace.setRaceLevel(level);
-            RaceManager.INSTANCE.dataAccessor().changePlayerRaceLevel(player.getUniqueId(), level);
+            int result = playerRace.setRaceLevel(level);
+            BukkitMsgSender.INSTANCE.sendMsg(
+                commandSender,
+                LangConfig.commandSetLevelSuccess.value(),
+                Map.of("%player%", playerName, "%level%", result + "")
+            );
         }
 
         @Override
         public @NotNull List<String> tab(@NotNull CommandSender commandSender, @NotNull List<String> args) {
             switch (args.size()) {
                 case 0, 1 -> {
-                    return Bukkit.getOnlinePlayers().stream().map(Player::getName).toList();
+                    return Utils.getPlayerNames();
                 }
                 default -> {
                     return List.of("1", "2", "3");
@@ -123,5 +147,8 @@ public class PluginCommand extends BukkitCommand {
             }
         }
     };
+
+    @Subcommand
+    BukkitSubCommand exp = RaceExpCommand.INSTANCE;
 
 }

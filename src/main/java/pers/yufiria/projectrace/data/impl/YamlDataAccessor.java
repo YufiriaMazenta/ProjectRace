@@ -9,6 +9,7 @@ import org.bukkit.plugin.Plugin;
 import pers.yufiria.projectrace.PlayerRace;
 import pers.yufiria.projectrace.RaceManager;
 import pers.yufiria.projectrace.data.DataAccessor;
+import pers.yufiria.projectrace.util.SchedulerHelper;
 
 import java.util.UUID;
 
@@ -29,44 +30,53 @@ public enum YamlDataAccessor implements DataAccessor, BukkitEnabler {
 
     @Override
     public void loadPlayerRace(UUID uuid) {
-        String uuidStr = uuid.toString();
-        YamlConfiguration config = playerRaceConfig.config();
-        String raceId = config.getString(uuidStr + ".race-id");
-        if (raceId == null) {
-            return;
-        }
-        int raceLevel = config.getInt(uuidStr + ".race-level");
-        RaceManager.INSTANCE.setPlayerRaceCache(uuid, new PlayerRace(uuid, raceId, raceLevel));
+        SchedulerHelper.async(() -> {
+            String uuidStr = uuid.toString();
+            YamlConfiguration config = playerRaceConfig.config();
+            String raceId = config.getString(uuidStr + ".race-id");
+            if (raceId == null) {
+                return;
+            }
+            int raceLevel = config.getInt(uuidStr + ".race-level");
+            RaceManager.INSTANCE.setPlayerRaceCache(uuid, new PlayerRace(uuid, raceId, raceLevel));
+        });
     }
 
     @Override
     public void changePlayerRaceLevel(UUID uuid, int level) {
-        String uuidStr = uuid.toString();
-        YamlConfiguration config = playerRaceConfig.config();
-        if (!config.contains(uuidStr)) {
-            return;
-        }
-        config.set(uuidStr + ".race-level", level);
-        playerRaceConfig.saveConfig();
+        SchedulerHelper.async(() -> {
+            String uuidStr = uuid.toString();
+            YamlConfiguration config = playerRaceConfig.config();
+            if (!config.contains(uuidStr)) {
+                return;
+            }
+            config.set(uuidStr + ".race-level", level);
+            playerRaceConfig.saveConfig();
+        });
     }
 
     @Override
     public void removePlayerRace(UUID uuid) {
-        String uuidStr = uuid.toString();
-        YamlConfiguration config = playerRaceConfig.config();
-        config.set(uuidStr, null);
-        playerRaceConfig.saveConfig();
+        SchedulerHelper.async(() -> {
+            String uuidStr = uuid.toString();
+            YamlConfiguration config = playerRaceConfig.config();
+            config.set(uuidStr, null);
+            playerRaceConfig.saveConfig();
+        });
     }
 
     @Override
     public void changePlayerRaceExp(UUID uuid, double raceExp) {
-        String uuidStr = uuid.toString();
-        YamlConfiguration config = playerRaceConfig.config();
-        if (!config.contains(uuidStr)) {
-            return;
-        }
-        config.set(uuidStr + ".race-exp", raceExp);
-        playerRaceConfig.saveConfig();
+        SchedulerHelper.async(() -> {
+            String uuidStr = uuid.toString();
+            YamlConfiguration config = playerRaceConfig.config();
+            if (!config.contains(uuidStr)) {
+                return;
+            }
+            config.set(uuidStr + ".race-exp", raceExp);
+            playerRaceConfig.saveConfig();
+        });
+
     }
 
     @Override

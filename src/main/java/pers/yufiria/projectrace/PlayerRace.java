@@ -75,21 +75,26 @@ public class PlayerRace {
         return raceExp;
     }
 
-    public PlayerRace setRaceExp(double raceExp) {
-        double levelUpExp = race().levelUpExp(raceLevel);
-        if (levelUpExp < 0) {
-            this.raceExp = raceExp;
-            RaceManager.INSTANCE.dataAccessor().changePlayerRaceExp(playerId, raceExp);
-            return this;
+    public double setRaceExp(double raceExp) {
+        Race race = race();
+        int level = raceLevel;
+        int maxLevel = race.maxLevel();
+        while (raceExp >= race.levelUpExp(level) && level < maxLevel) {
+            raceExp -= race.levelUpExp(level);
+            level ++;
         }
-        if (raceExp >= levelUpExp) {
-            setRaceLevel(raceLevel + 1);
-            setRaceExp(raceExp % levelUpExp);
-        } else {
-            this.raceExp = raceExp;
-            RaceManager.INSTANCE.dataAccessor().changePlayerRaceExp(playerId, raceExp);
-        }
-        return this;
+        setRaceLevel(level);
+        this.raceExp = raceExp;
+        RaceManager.INSTANCE.dataAccessor().changePlayerRaceExp(playerId, raceExp);
+        return this.raceExp;
+    }
+
+    public double addRaceExp(double add) {
+        return setRaceExp(raceExp + add);
+    }
+
+    public double subtractRaceExp(double subtract) {
+        return setRaceExp(Math.max(0, raceExp - subtract));
     }
 
     @Override

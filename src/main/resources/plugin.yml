@@ -6,4 +6,6 @@ load: POSTWORLD
 authors: [ YufiriaMazenta ]
 depend:
   - ParticleLib
+soft-depend:
+  - PlaceholderAPI
 folia-supported: true
