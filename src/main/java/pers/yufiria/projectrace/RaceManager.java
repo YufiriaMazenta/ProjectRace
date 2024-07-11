@@ -1,9 +1,17 @@
 package pers.yufiria.projectrace;
 
+import crypticlib.CrypticLibBukkit;
 import crypticlib.lifecycle.BukkitEnabler;
 import crypticlib.lifecycle.BukkitReloader;
 import crypticlib.lifecycle.annotation.OnEnable;
 import crypticlib.lifecycle.annotation.OnReload;
+import crypticlib.listener.EventListener;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 import pers.yufiria.projectrace.config.Configs;
@@ -18,7 +26,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @OnReload
 @OnEnable
-public enum RaceManager implements BukkitReloader, BukkitEnabler {
+@EventListener
+public enum RaceManager implements BukkitReloader, BukkitEnabler, Listener {
 
     INSTANCE;
     private DataAccessor dataAccessor = YamlDataAccessor.INSTANCE;
@@ -36,11 +45,11 @@ public enum RaceManager implements BukkitReloader, BukkitEnabler {
         return playerRaceCacheMap.get(uuid);
     }
 
-    public void setPlayerRace(UUID uuid, PlayerRace playerRace) {
+    public void setPlayerRaceCache(UUID uuid, PlayerRace playerRace) {
         playerRaceCacheMap.put(uuid, playerRace);
     }
 
-    public void removePlayerRace(UUID uuid) {
+    public void removePlayerRaceCache(UUID uuid) {
         playerRaceCacheMap.remove(uuid);
     }
 
@@ -78,6 +87,27 @@ public enum RaceManager implements BukkitReloader, BukkitEnabler {
     @Override
     public void enable(Plugin plugin) {
         reload(plugin);
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        dataAccessor.loadPlayerRace(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        UUID uuid = event.getPlayer().getUniqueId();
+        //一分钟后清除缓存
+        CrypticLibBukkit.scheduler().runTaskLater(
+            ProjectRaceBukkit.INSTANCE,
+            () -> {
+                Player player = Bukkit.getPlayer(uuid);
+                if (player == null || !player.isOnline()) {
+                    removePlayerRaceCache(uuid);
+                }
+            },
+            1200
+        );
     }
 
 }

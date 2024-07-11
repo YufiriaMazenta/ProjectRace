@@ -24,7 +24,7 @@ dependencies {
     compileOnly("com.github.602723113:ParticleLib:1.5.1")
     compileOnly("org.jetbrains:annotations:24.0.1")
     compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
-    implementation("com.crypticlib:bukkit:1.0.3")
+    implementation("com.crypticlib:bukkit:1.0.5")
     implementation("com.zaxxer:HikariCP:5.1.0")
 }
 

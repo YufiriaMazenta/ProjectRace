@@ -6,14 +6,63 @@ vampire:
   attribute-modifiers:
     max-health:
       0: 0
-      1: 1
-      2: 2
-      3: 3
-      4: 4
-      5: 5
-      6: 6
-      7: 7
-      8: 8
-      9: 9
-      10: 10
-  sucking-rate: 0.25
+      1: 2
+      2: 4
+      3: 6
+      4: 8
+      5: 10
+      6: 12
+      7: 14
+      8: 16
+      9: 18
+      10: 20
+  sucking-rate:
+    0: 0.25
+    1: 0.26
+    2: 0.27
+    3: 0.28
+    4: 0.29
+    5: 0.3
+    6: 0.31
+    7: 0.32
+    8: 0.33
+    9: 0.34
+    10: 0.35
+  #升级所需经验
+  level-up-exp:
+    0: 110
+    1: 120
+    2: 130
+    3: 140
+    4: 150
+    5: 160
+    6: 170
+    7: 180
+    8: 190
+    9: 200
+  night-effects:
+    - 'night_vision,0,220'
+    - 'strength,0,40'
+    - 'speed,0,40'
+  sucking-particle:
+    fool-level:
+      type: GLOW_SQUID_INK
+      #计算曲线中点坐标使用的参数,会影响曲线效果
+      center-loc-args:
+        x: 0.85
+        y: 0.85
+        z: 0.85
+    health:
+      type: GLOW_SQUID_INK
+      #计算曲线中点坐标使用的参数,会影响曲线效果
+      center-loc-args:
+        x: 0.85
+        y: 0.85
+        z: 0.85
+    saturation:
+      type: GLOW_SQUID_INK
+      #计算曲线中点坐标使用的参数,会影响曲线效果
+      center-loc-args:
+        x: 0.85
+        y: 0.85
+        z: 0.85

@@ -9,7 +9,6 @@ public class ProjectRaceBukkit extends BukkitPlugin {
     @Override
     public void enable() {
         INSTANCE = this;
-
     }
 
     @Override

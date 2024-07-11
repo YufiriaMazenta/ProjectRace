@@ -1,9 +1,10 @@
 package pers.yufiria.projectrace;
 
-import crypticlib.chat.BukkitMsgSender;
 import crypticlib.scheduler.CrypticLibRunnable;
+import org.apache.logging.log4j.util.BiConsumer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import pers.yufiria.projectrace.race.Race;
 
 public class RaceTicker extends CrypticLibRunnable {
 
@@ -11,13 +12,23 @@ public class RaceTicker extends CrypticLibRunnable {
     public void run() {
         RaceManager.INSTANCE.playerRaceCacheMap().forEach(
             (uuid, playerRace) -> {
-                BukkitMsgSender.INSTANCE.debug("tick " + uuid);
                 Player player = Bukkit.getPlayer(uuid);
                 if (player == null)
                     return;
-                BukkitMsgSender.INSTANCE.debug("tick " + player.getName());
-                playerRace.race().applyAttribute2Player(player);
+                if (!player.isOnline())
+                    return;
+                if (player.isDead())
+                    return;
+                Race race = playerRace.race();
+                race.applyAttribute2Player(player);
+                BiConsumer<Player, PlayerRace> raceTask = race.raceTask();
+                if (raceTask != null) {
+                    raceTask.accept(player, playerRace);
+                }
             }
         );
     }
+
+
+
 }

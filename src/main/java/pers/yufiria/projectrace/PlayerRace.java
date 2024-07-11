@@ -5,22 +5,35 @@ import pers.yufiria.projectrace.exception.RaceException;
 import pers.yufiria.projectrace.race.Race;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class PlayerRace {
 
+    private final UUID playerId;
     private String raceId;
     private int raceLevel;
+    private double raceExp;
 
-    public PlayerRace(String raceId) {
-        this(raceId, 0);
+    public PlayerRace(UUID playerId, String raceId) {
+        this(playerId, raceId, 0);
     }
 
-    public PlayerRace(String raceId, int raceLevel) {
+    public PlayerRace(UUID playerId, String raceId, int raceLevel) {
+        this(playerId, raceId, raceLevel, 0);
+    }
+
+    public PlayerRace(UUID playerId, String raceId, int raceLevel, double raceExp) {
         if (RaceManager.INSTANCE.getRace(raceId) == null) {
             throw new RaceException("Unknown race " + raceId);
         }
-        this.raceId = raceId;
+        this.playerId = playerId;
+        this.raceExp = raceExp;
         this.raceLevel = raceLevel;
+        this.raceId = raceId;
+    }
+
+    public UUID playerId() {
+        return playerId;
     }
 
     public String raceId() {
@@ -29,6 +42,8 @@ public class PlayerRace {
 
     public PlayerRace setRaceId(String raceId) {
         this.raceId = raceId;
+        setRaceExp(0);
+        setRaceLevel(0);
         return this;
     }
 
@@ -44,6 +59,7 @@ public class PlayerRace {
     public int setRaceLevel(int raceLevel) {
         int maxLevel = RaceManager.INSTANCE.getRace(raceId).maxLevel();
         this.raceLevel = Math.min(raceLevel, maxLevel);
+        RaceManager.INSTANCE.dataAccessor().changePlayerRaceLevel(playerId, raceLevel);
         return this.raceLevel;
     }
 
@@ -53,6 +69,27 @@ public class PlayerRace {
             throw new IllegalArgumentException("Can not find player's race");
         }
         return race;
+    }
+
+    public double raceExp() {
+        return raceExp;
+    }
+
+    public PlayerRace setRaceExp(double raceExp) {
+        double levelUpExp = race().levelUpExp(raceLevel);
+        if (levelUpExp < 0) {
+            this.raceExp = raceExp;
+            RaceManager.INSTANCE.dataAccessor().changePlayerRaceExp(playerId, raceExp);
+            return this;
+        }
+        if (raceExp >= levelUpExp) {
+            setRaceLevel(raceLevel + 1);
+            setRaceExp(raceExp % levelUpExp);
+        } else {
+            this.raceExp = raceExp;
+            RaceManager.INSTANCE.dataAccessor().changePlayerRaceExp(playerId, raceExp);
+        }
+        return this;
     }
 
     @Override

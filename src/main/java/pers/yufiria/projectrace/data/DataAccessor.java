@@ -8,10 +8,12 @@ public interface DataAccessor {
 
     void setPlayerRace(UUID uuid, PlayerRace playerRace);
 
-    void getPlayerRace(UUID uuid);
+    void loadPlayerRace(UUID uuid);
 
     void changePlayerRaceLevel(UUID uuid, int level);
 
     void removePlayerRace(UUID uuid);
+
+    void changePlayerRaceExp(UUID uuid, double raceExp);
 
 }

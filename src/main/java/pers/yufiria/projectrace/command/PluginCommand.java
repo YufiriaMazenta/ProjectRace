@@ -1,7 +1,6 @@
 package pers.yufiria.projectrace.command;
 
 import crypticlib.chat.BukkitMsgSender;
-import crypticlib.chat.MsgSender;
 import crypticlib.command.BukkitCommand;
 import crypticlib.command.BukkitSubCommand;
 import crypticlib.command.CommandInfo;
@@ -12,16 +11,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import pers.yufiria.projectrace.PlayerRace;
 import pers.yufiria.projectrace.ProjectRaceBukkit;
 import pers.yufiria.projectrace.RaceManager;
-import pers.yufiria.projectrace.RaceTicker;
 import pers.yufiria.projectrace.config.LangConfig;
 import pers.yufiria.projectrace.race.Race;
 import pers.yufiria.projectrace.util.AttributeHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Command
@@ -62,9 +58,9 @@ public class PluginCommand extends BukkitCommand {
                 BukkitMsgSender.INSTANCE.sendMsg(commandSender, "Unknown race " + raceId);
                 return;
             }
-            PlayerRace playerRace = new PlayerRace(raceId, 0);
+            PlayerRace playerRace = new PlayerRace(player.getUniqueId(), raceId, 0);
             AttributeHelper.removePlayerAllRaceAttribute(player);
-            RaceManager.INSTANCE.setPlayerRace(player.getUniqueId(), playerRace);
+            RaceManager.INSTANCE.setPlayerRaceCache(player.getUniqueId(), playerRace);
             BukkitMsgSender.INSTANCE.sendMsg(commandSender, "Set player " + playerName + "'s race to " + race.name());
             RaceManager.INSTANCE.dataAccessor().setPlayerRace(player.getUniqueId(), playerRace);
         }

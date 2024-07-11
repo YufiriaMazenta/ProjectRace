@@ -7,7 +7,6 @@ import crypticlib.lifecycle.annotation.OnEnable;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import pers.yufiria.projectrace.PlayerRace;
-import pers.yufiria.projectrace.ProjectRaceBukkit;
 import pers.yufiria.projectrace.RaceManager;
 import pers.yufiria.projectrace.data.DataAccessor;
 
@@ -29,7 +28,7 @@ public enum YamlDataAccessor implements DataAccessor, BukkitEnabler {
     }
 
     @Override
-    public void getPlayerRace(UUID uuid) {
+    public void loadPlayerRace(UUID uuid) {
         String uuidStr = uuid.toString();
         YamlConfiguration config = playerRaceConfig.config();
         String raceId = config.getString(uuidStr + ".race-id");
@@ -37,7 +36,7 @@ public enum YamlDataAccessor implements DataAccessor, BukkitEnabler {
             return;
         }
         int raceLevel = config.getInt(uuidStr + ".race-level");
-        RaceManager.INSTANCE.setPlayerRace(uuid, new PlayerRace(raceId, raceLevel));
+        RaceManager.INSTANCE.setPlayerRaceCache(uuid, new PlayerRace(uuid, raceId, raceLevel));
     }
 
     @Override
@@ -60,9 +59,21 @@ public enum YamlDataAccessor implements DataAccessor, BukkitEnabler {
     }
 
     @Override
+    public void changePlayerRaceExp(UUID uuid, double raceExp) {
+        String uuidStr = uuid.toString();
+        YamlConfiguration config = playerRaceConfig.config();
+        if (!config.contains(uuidStr)) {
+            return;
+        }
+        config.set(uuidStr + ".race-exp", raceExp);
+        playerRaceConfig.saveConfig();
+    }
+
+    @Override
     public void enable(Plugin plugin) {
         playerRaceConfig = new BukkitConfigWrapper(plugin, "data/player_race.yml");
         playerRaceConfig.saveDefaultConfigFile();
         playerRaceConfig.reloadConfig();
     }
+
 }

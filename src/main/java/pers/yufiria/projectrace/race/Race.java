@@ -1,5 +1,6 @@
 package pers.yufiria.projectrace.race;
 
+import org.apache.logging.log4j.util.BiConsumer;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
@@ -9,6 +10,8 @@ import org.jetbrains.annotations.Nullable;
 import pers.yufiria.projectrace.PlayerRace;
 import pers.yufiria.projectrace.RaceManager;
 import pers.yufiria.projectrace.util.AttributeHelper;
+
+import java.util.function.Consumer;
 
 public interface Race {
 
@@ -32,6 +35,17 @@ public interface Race {
     @Nullable AttributeModifier interactRangeModifier(int level);
 
     @Nullable AttributeModifier scaleModifier(int level);
+
+    @Nullable
+    default BiConsumer<Player, PlayerRace> raceTask() {
+        return null;
+    }
+
+    /**
+     * 升级所需的经验,返回负数代表此等级无法升级
+     * @param level 升级前的等级
+     */
+    double levelUpExp(int level);
 
     /**
      * 将此种族的属性应用到玩家身上
