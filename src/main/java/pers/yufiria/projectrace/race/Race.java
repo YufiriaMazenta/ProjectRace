@@ -36,6 +36,8 @@ public interface Race {
 
     @Nullable AttributeModifier scaleModifier(int level);
 
+    @Nullable AttributeModifier attackDamageModifier(int level);
+
     @Nullable
     default BiConsumer<Player, PlayerRace> raceTask() {
         return null;
@@ -46,6 +48,10 @@ public interface Race {
      * @param level 升级前的等级
      */
     double levelUpExp(int level);
+
+    void releaseSkill(Player race, PlayerRace playerRace);
+
+    void cancelSkill(Player race);
 
     /**
      * 将此种族的属性应用到玩家身上
@@ -82,6 +88,12 @@ public interface Race {
         AttributeModifier scaleModifier = scaleModifier(raceLevel);
         if (scaleModifier != null) {
             AttributeHelper.addAttributeModifier(player, Attribute.GENERIC_SCALE, scaleModifier);
+        }
+
+        //攻击伤害
+        AttributeModifier attackDamageModifier = attackDamageModifier(raceLevel);
+        if (attackDamageModifier != null) {
+            AttributeHelper.addAttributeModifier(player, Attribute.GENERIC_ATTACK_DAMAGE, attackDamageModifier);
         }
     }
 

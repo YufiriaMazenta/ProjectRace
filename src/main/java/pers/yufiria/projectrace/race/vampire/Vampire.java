@@ -7,10 +7,14 @@ import crypticlib.lifecycle.BukkitReloader;
 import crypticlib.lifecycle.annotation.OnEnable;
 import crypticlib.lifecycle.annotation.OnReload;
 import org.apache.logging.log4j.util.BiConsumer;
+import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Particle;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.plugin.Plugin;
@@ -19,12 +23,11 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pers.yufiria.projectrace.PlayerRace;
-import pers.yufiria.projectrace.ProjectRaceBukkit;
 import pers.yufiria.projectrace.config.Configs;
 import pers.yufiria.projectrace.race.Race;
+import pers.yufiria.projectrace.util.EntityHelper;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,11 +37,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Vampire implements Race, BukkitEnabler, BukkitReloader {
 
     public static final Vampire INSTANCE = new Vampire();
-    private Map<Integer, Double> maxHealthModifierValueMap = new ConcurrentHashMap<>();
-    private List<PotionEffect> nightPotionEffects = new ArrayList<>();
-    private Map<Integer, Double> suckingRateMap = new ConcurrentHashMap<>();
-    private Map<Integer, Double> levelUpExpMap = new ConcurrentHashMap<>();
-    private NamespacedKey vampireMaxHealthModifierKey = new NamespacedKey("projectrace", id() + ".max_health");
+    private final NamespacedKey vampireMaxHealthModifierKey = new NamespacedKey("projectrace", id() + ".max_health");
+    private final Map<Integer, Double> maxHealthModifierValueMap = new ConcurrentHashMap<>();
+    private final List<PotionEffect> nightPotionEffects = new ArrayList<>();
+    private final Map<Integer, Double> suckingRateMap = new ConcurrentHashMap<>();
+    private final Map<Integer, Double> levelUpExpMap = new ConcurrentHashMap<>();
+    private final Map<Integer, Long> skillDurationTickMap = new ConcurrentHashMap<>();
+    private final Map<Integer, Double> skillRadiusMap = new ConcurrentHashMap<>();
 
     @Override
     public @NotNull String id() {
@@ -84,6 +89,11 @@ public class Vampire implements Race, BukkitEnabler, BukkitReloader {
     }
 
     @Override
+    public @Nullable AttributeModifier attackDamageModifier(int level) {
+        return null;
+    }
+
+    @Override
     public @Nullable BiConsumer<Player, PlayerRace> raceTask() {
         return (player, playerRace) -> {
             World world = player.getWorld();
@@ -108,6 +118,40 @@ public class Vampire implements Race, BukkitEnabler, BukkitReloader {
         }
     }
 
+    @Override
+    public void releaseSkill(Player vampire, PlayerRace playerRace) {
+        long duration = skillDuration(playerRace.raceLevel());
+        double radius = skillRadius(playerRace.raceLevel());
+        VampireSkillManager.INSTANCE.releaseSkill(vampire, duration, radius);
+    }
+
+    @Override
+    public void cancelSkill(Player vampire) {
+        VampireSkillManager.INSTANCE.cancelSkill(vampire);
+    }
+
+    public long skillDuration(int level) {
+        if (skillDurationTickMap.containsKey(level)) {
+            return skillDurationTickMap.get(level);
+        } else {
+            if (level == 0) {
+                return 400;
+            }
+            return skillDuration(level - 1);
+        }
+    }
+
+    public double skillRadius(int level) {
+        if (skillRadiusMap.containsKey(level)) {
+            return skillRadiusMap.get(level);
+        } else {
+            if (level == 0) {
+                return 40d;
+            }
+            return skillRadius(level - 1);
+        }
+    }
+
     public double getSuckingRate(int level) {
         if (suckingRateMap.containsKey(level)) {
             return suckingRateMap.get(level);
@@ -117,6 +161,64 @@ public class Vampire implements Race, BukkitEnabler, BukkitReloader {
             } else {
                 return getSuckingRate(level - 1);
             }
+        }
+    }
+
+    /**
+     * 吸血
+     * @param vampire 攻击者
+     * @param entity 被吸血的生物
+     */
+    public void suck(Player vampire, LivingEntity entity, PlayerRace playerRace, double damage) {
+        double suckingAmount = damage * this.getSuckingRate(playerRace.raceLevel());
+        Location start = EntityHelper.getMiddleLoc(entity);
+        Location end = EntityHelper.getMiddleLoc(vampire);
+        int foodLevel = vampire.getFoodLevel();
+        if (foodLevel < 20) {
+            vampire.setFoodLevel(Math.min(20, foodLevel + (int) Math.ceil(suckingAmount)));
+            VampireParticlePainter.INSTANCE.drawSuckParticle(
+                start,
+                end,
+                Particle.valueOf(Configs.vampireSuckingParticleFoolLevelType.value().toUpperCase()),
+                Configs.vampireSuckingParticleFoodLevelColor.value(),
+                Configs.vampireSuckingParticleFoodLevelCenterLocArgsX.value(),
+                Configs.vampireSuckingParticleFoodLevelCenterLocArgsY.value(),
+                Configs.vampireSuckingParticleFoodLevelCenterLocArgsZ.value()
+            );
+            return;
+        }
+
+        double health = vampire.getHealth();
+        double maxHealth = vampire.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        if (health < maxHealth) {
+            vampire.setHealth(Math.min(maxHealth, health + suckingAmount));
+            VampireParticlePainter.INSTANCE.drawSuckParticle(
+                start,
+                end,
+                Particle.valueOf(Configs.vampireSuckingParticleHealthType.value().toUpperCase()),
+                Configs.vampireSuckingParticleHealthColor.value(),
+                Configs.vampireSuckingParticleHealthCenterLocArgsX.value(),
+                Configs.vampireSuckingParticleHealthCenterLocArgsY.value(),
+                Configs.vampireSuckingParticleHealthCenterLocArgsZ.value()
+            );
+            return;
+        }
+
+        float saturation = vampire.getSaturation();
+        if (saturation < foodLevel) {
+            if (suckingAmount < 1) {
+                suckingAmount = 1;
+            }
+            vampire.setSaturation(Math.min(20, saturation + (int) Math.ceil(suckingAmount)));
+            VampireParticlePainter.INSTANCE.drawSuckParticle(
+                start,
+                end,
+                Particle.valueOf(Configs.vampireSuckingParticleSaturationType.value().toUpperCase()),
+                Configs.vampireSuckingParticleSaturationColor.value(),
+                Configs.vampireSuckingParticleSaturationCenterLocArgsX.value(),
+                Configs.vampireSuckingParticleSaturationCenterLocArgsY.value(),
+                Configs.vampireSuckingParticleSaturationCenterLocArgsZ.value()
+            );
         }
     }
 
@@ -172,6 +274,22 @@ public class Vampire implements Race, BukkitEnabler, BukkitReloader {
             int level = Integer.parseInt(key);
             double exp = levelUpExpConfig.getDouble(key);
             levelUpExpMap.put(level, exp);
+        }
+
+        skillDurationTickMap.clear();
+        ConfigurationSection skillDurationTickConfig = Configs.vampireSkillDurationTick.value();
+        for (String key : skillDurationTickConfig.getKeys(false)) {
+            int level = Integer.parseInt(key);
+            long duration = skillDurationTickConfig.getLong(key);
+            skillDurationTickMap.put(level, duration);
+        }
+
+        skillRadiusMap.clear();
+        ConfigurationSection skillRadiusConfig = Configs.vampireSkillRadius.value();
+        for (String key : skillDurationTickConfig.getKeys(false)) {
+            int level = Integer.parseInt(key);
+            double radius = skillRadiusConfig.getDouble(key);
+            skillRadiusMap.put(level, radius);
         }
     }
 

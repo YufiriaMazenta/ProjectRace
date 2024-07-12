@@ -1,11 +1,9 @@
 package pers.yufiria.projectrace.util;
 
-import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
-import pers.yufiria.projectrace.PlayerRace;
 import pers.yufiria.projectrace.ProjectRaceBukkit;
 
 public class AttributeHelper {

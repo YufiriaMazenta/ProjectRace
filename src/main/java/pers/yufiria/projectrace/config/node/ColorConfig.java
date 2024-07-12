@@ -13,6 +13,10 @@ public class ColorConfig extends BukkitConfigNode<Color> {
         super(key, def);
     }
 
+    public ColorConfig(String key, Color def, @NotNull String defComment) {
+        super(key, def, defComment);
+    }
+
     public ColorConfig(@NotNull String key, @NotNull Color def, @NotNull List<String> defComments) {
         super(key, def, defComments);
     }

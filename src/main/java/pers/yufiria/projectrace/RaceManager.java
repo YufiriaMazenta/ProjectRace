@@ -81,7 +81,7 @@ public enum RaceManager implements BukkitReloader, BukkitEnabler, Listener {
             raceTicker.cancel();
         }
         raceTicker = new RaceTicker();
-        raceTicker.runTaskTimer(plugin, 0, Configs.raceTickDuration.value());
+        raceTicker.runTaskTimer(plugin, 0, Configs.raceTickPeriod.value());
     }
 
     @Override

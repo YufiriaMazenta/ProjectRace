@@ -1,4 +1,4 @@
-race-tick-duration: 1
+race-tick-period: 15
 race-exp-papi-format: "%.2f"
 
 vampire:
@@ -46,6 +46,7 @@ vampire:
     - 'strength,0,40'
     - 'speed,0,40'
   sucking-particle:
+    max-distance: 32
     fool-level:
       type: GLOW_SQUID_INK
       #计算曲线中点坐标使用的参数,会影响曲线效果
@@ -67,3 +68,41 @@ vampire:
         x: 0.85
         y: 0.85
         z: 0.85
+  skill:
+    #技能的持续时间,与等级挂钩
+    duration-tick:
+      0: 400
+      1: 420
+      2: 440
+      3: 460
+      4: 480
+      5: 500
+      6: 520
+      7: 540
+      8: 560
+      9: 580
+      10: 600
+    radius:
+      0: 40
+      1: 41
+      2: 42
+      3: 43
+      4: 44
+      5: 45
+      6: 46
+      7: 47
+      8: 48
+      9: 49
+      10: 50
+    wing:
+      step: 0.2
+      shape:
+        - '    ########'
+        - '  #######'
+        - '######'
+        - '###'
+        - ' ##'
+        - '  ##'
+        - '   ##'
+      min-rot-range: 0
+      max-rot-range: 72
