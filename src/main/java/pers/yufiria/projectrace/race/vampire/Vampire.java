@@ -178,13 +178,12 @@ public class Vampire implements Race, BukkitEnabler, BukkitReloader {
         Location end = EntityHelper.getMiddleLoc(vampire);
         int foodLevel = vampire.getFoodLevel();
         if (foodLevel < 20) {
-            suckingAmount = Math.ceil(suckingAmount);
             VampireSuckEvent event = new VampireSuckEvent(playerRace, suckingAmount, VampireSuckEvent.SuckType.FOOD_LEVEL);
             Utils.callEvent(event);
             if (event.isCancelled()) {
                 return;
             }
-            vampire.setFoodLevel(Math.min(20, foodLevel + (int) suckingAmount));
+            vampire.setFoodLevel(Math.min(20, foodLevel + (int) Math.ceil(suckingAmount)));
             VampireParticlePainter.INSTANCE.drawSuckParticle(
                 start,
                 end,
@@ -220,13 +219,12 @@ public class Vampire implements Race, BukkitEnabler, BukkitReloader {
 
         float saturation = vampire.getSaturation();
         if (saturation < foodLevel) {
-            suckingAmount = Math.ceil(suckingAmount);
             VampireSuckEvent event = new VampireSuckEvent(playerRace, suckingAmount, VampireSuckEvent.SuckType.SATURATION);
             Utils.callEvent(event);
             if (event.isCancelled()) {
                 return;
             }
-            vampire.setSaturation(Math.min(20, saturation + (int) suckingAmount));
+            vampire.setSaturation(Math.min(20, saturation + (int) Math.ceil(suckingAmount)));
             VampireParticlePainter.INSTANCE.drawSuckParticle(
                 start,
                 end,
