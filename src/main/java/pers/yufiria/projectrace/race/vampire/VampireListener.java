@@ -15,14 +15,20 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import pers.yufiria.projectrace.PlayerRace;
 import pers.yufiria.projectrace.RaceManager;
+import pers.yufiria.projectrace.event.VampireSuckEvent;
 
+import java.util.Map;
 import java.util.UUID;
 
 @EventListener
 public class VampireListener implements Listener {
 
+    private final String VAMPIRE_SKILL_ENGINE = "vampire_skill_engine";
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void commonSuck(EntityDamageByEntityEvent event) {
+        if (event.isCancelled())
+            return;
         if (!(event.getDamager() instanceof Player player)) {
             return;
         }
@@ -39,6 +45,8 @@ public class VampireListener implements Listener {
 
     @EventHandler
     public void cancelItemFoodChange(FoodLevelChangeEvent event) {
+        if (event.isCancelled())
+            return;
         PlayerRace playerRace = RaceManager.INSTANCE.getPlayerRace(event.getEntity().getUniqueId());
         if (playerRace == null)
             return;
@@ -51,6 +59,8 @@ public class VampireListener implements Listener {
 
     @EventHandler
     public void skillSuck(EntityDamageEvent event) {
+        if (event.isCancelled())
+            return;
         if (!(event.getEntity() instanceof LivingEntity entity))
             return;
         Location location = entity.getLocation();
@@ -91,6 +101,24 @@ public class VampireListener implements Listener {
             return;
         }
         playerRace.race().cancelSkill(event.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onVampireSuckAddSkillEngine(VampireSuckEvent event) {
+        if (event.isCancelled())
+            return;
+        if (VampireSkillManager.INSTANCE.isReleasingSkill(event.playerRace().playerId())) {
+            return;
+        }
+        Map<String, Object> raceArgs = event.playerRace().raceArgs();
+        if (raceArgs.containsKey(VAMPIRE_SKILL_ENGINE)) {
+            double value = (double) raceArgs.get(VAMPIRE_SKILL_ENGINE);
+            value += event.raceAmount();
+            raceArgs.put(VAMPIRE_SKILL_ENGINE, value);
+        } else {
+            raceArgs.put(VAMPIRE_SKILL_ENGINE, event.raceAmount());
+        }
+        //TODO 能量充满后,如何使用技能
     }
 
 }

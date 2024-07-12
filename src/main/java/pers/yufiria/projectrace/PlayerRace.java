@@ -4,8 +4,10 @@ import org.jetbrains.annotations.NotNull;
 import pers.yufiria.projectrace.exception.RaceException;
 import pers.yufiria.projectrace.race.Race;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerRace {
 
@@ -13,6 +15,7 @@ public class PlayerRace {
     private String raceId;
     private int raceLevel;
     private double raceExp;
+    private Map<String, Object> raceArgs = new ConcurrentHashMap<>();
 
     public PlayerRace(UUID playerId, String raceId) {
         this(playerId, raceId, 0);
@@ -95,6 +98,10 @@ public class PlayerRace {
 
     public double subtractRaceExp(double subtract) {
         return setRaceExp(Math.max(0, raceExp - subtract));
+    }
+
+    public Map<String, Object> raceArgs() {
+        return raceArgs;
     }
 
     @Override

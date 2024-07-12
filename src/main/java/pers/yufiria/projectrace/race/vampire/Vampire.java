@@ -16,6 +16,7 @@ import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
@@ -24,8 +25,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pers.yufiria.projectrace.PlayerRace;
 import pers.yufiria.projectrace.config.Configs;
+import pers.yufiria.projectrace.event.VampireSuckEvent;
 import pers.yufiria.projectrace.race.Race;
 import pers.yufiria.projectrace.util.EntityHelper;
+import pers.yufiria.projectrace.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -175,7 +178,13 @@ public class Vampire implements Race, BukkitEnabler, BukkitReloader {
         Location end = EntityHelper.getMiddleLoc(vampire);
         int foodLevel = vampire.getFoodLevel();
         if (foodLevel < 20) {
-            vampire.setFoodLevel(Math.min(20, foodLevel + (int) Math.ceil(suckingAmount)));
+            suckingAmount = Math.ceil(suckingAmount);
+            VampireSuckEvent event = new VampireSuckEvent(playerRace, suckingAmount, VampireSuckEvent.SuckType.FOOD_LEVEL);
+            Utils.callEvent(event);
+            if (event.isCancelled()) {
+                return;
+            }
+            vampire.setFoodLevel(Math.min(20, foodLevel + (int) suckingAmount));
             VampireParticlePainter.INSTANCE.drawSuckParticle(
                 start,
                 end,
@@ -191,6 +200,11 @@ public class Vampire implements Race, BukkitEnabler, BukkitReloader {
         double health = vampire.getHealth();
         double maxHealth = vampire.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
         if (health < maxHealth) {
+            VampireSuckEvent event = new VampireSuckEvent(playerRace, suckingAmount, VampireSuckEvent.SuckType.HEALTH);
+            Utils.callEvent(event);
+            if (event.isCancelled()) {
+                return;
+            }
             vampire.setHealth(Math.min(maxHealth, health + suckingAmount));
             VampireParticlePainter.INSTANCE.drawSuckParticle(
                 start,
@@ -206,10 +220,13 @@ public class Vampire implements Race, BukkitEnabler, BukkitReloader {
 
         float saturation = vampire.getSaturation();
         if (saturation < foodLevel) {
-            if (suckingAmount < 1) {
-                suckingAmount = 1;
+            suckingAmount = Math.ceil(suckingAmount);
+            VampireSuckEvent event = new VampireSuckEvent(playerRace, suckingAmount, VampireSuckEvent.SuckType.SATURATION);
+            Utils.callEvent(event);
+            if (event.isCancelled()) {
+                return;
             }
-            vampire.setSaturation(Math.min(20, saturation + (int) Math.ceil(suckingAmount)));
+            vampire.setSaturation(Math.min(20, saturation + (int) suckingAmount));
             VampireParticlePainter.INSTANCE.drawSuckParticle(
                 start,
                 end,

@@ -112,6 +112,10 @@ public enum VampireSkillManager {
         }
     }
 
+    public boolean isReleasingSkill(UUID playerId) {
+        return suckingAreaMap.containsKey(playerId);
+    }
+
     public record SuckingArea(Location loc1, Location loc2, UUID owner) {
 
         public boolean inArea(Location loc) {
