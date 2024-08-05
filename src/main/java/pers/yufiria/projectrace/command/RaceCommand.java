@@ -2,7 +2,7 @@ package pers.yufiria.projectrace.command;
 
 import crypticlib.chat.BukkitMsgSender;
 import crypticlib.command.BukkitCommand;
-import crypticlib.command.BukkitSubCommand;
+import crypticlib.command.BukkitSubcommand;
 import crypticlib.command.CommandInfo;
 import crypticlib.command.annotation.Command;
 import crypticlib.command.annotation.Subcommand;
@@ -18,22 +18,23 @@ import pers.yufiria.projectrace.command.sub.RaceExpCommand;
 import pers.yufiria.projectrace.config.LangConfig;
 import pers.yufiria.projectrace.race.Race;
 import pers.yufiria.projectrace.util.AttributeHelper;
+import pers.yufiria.projectrace.util.PlayerHelper;
 import pers.yufiria.projectrace.util.Utils;
 
 import java.util.List;
 import java.util.Map;
 
 @Command
-public class PluginCommand extends BukkitCommand {
+public class RaceCommand extends BukkitCommand {
 
-    public static final PluginCommand INSTANCE = new PluginCommand();
+    public static final RaceCommand INSTANCE = new RaceCommand();
 
-    public PluginCommand() {
+    public RaceCommand() {
         super(new CommandInfo("race", new PermInfo("race.command")));
     }
 
     @Subcommand
-    BukkitSubCommand reload = new BukkitSubCommand("reload", new PermInfo("race.command.reload")) {
+    BukkitSubcommand reload = new BukkitSubcommand("reload", new PermInfo("race.command.reload")) {
         @Override
         public void execute(@NotNull CommandSender sender, @NotNull List<String> args) {
             ProjectRaceBukkit.INSTANCE.reloadPlugin();
@@ -42,7 +43,7 @@ public class PluginCommand extends BukkitCommand {
     };
 
     @Subcommand
-    BukkitSubCommand setRace = new BukkitSubCommand("setRace", new PermInfo("race.command.set-race")) {
+    BukkitSubcommand setRace = new BukkitSubcommand("setRace", new PermInfo("race.command.set-race")) {
         @Override
         public void execute(@NotNull CommandSender commandSender, @NotNull List<String> args) {
             if (args.isEmpty()) {
@@ -69,8 +70,10 @@ public class PluginCommand extends BukkitCommand {
                 );
                 return;
             }
+            //重置
+            PlayerHelper.resetRaceEffects(player);
+
             PlayerRace playerRace = new PlayerRace(player.getUniqueId(), raceId, 0);
-            AttributeHelper.removePlayerAllRaceAttribute(player);
             RaceManager.INSTANCE.setPlayerRaceCache(player.getUniqueId(), playerRace);
             RaceManager.INSTANCE.dataAccessor().setPlayerRace(player.getUniqueId(), playerRace);
             BukkitMsgSender.INSTANCE.sendMsg(
@@ -97,7 +100,7 @@ public class PluginCommand extends BukkitCommand {
     };
 
     @Subcommand
-    BukkitSubCommand setLevel = new BukkitSubCommand("setLevel", new PermInfo("race.command.set-level")) {
+    BukkitSubcommand setLevel = new BukkitSubcommand("setLevel", new PermInfo("race.command.set-level")) {
         @Override
         public void execute(@NotNull CommandSender commandSender, @NotNull List<String> args) {
             if (args.isEmpty()) {
@@ -149,6 +152,6 @@ public class PluginCommand extends BukkitCommand {
     };
 
     @Subcommand
-    BukkitSubCommand exp = RaceExpCommand.INSTANCE;
+    BukkitSubcommand exp = RaceExpCommand.INSTANCE;
 
 }

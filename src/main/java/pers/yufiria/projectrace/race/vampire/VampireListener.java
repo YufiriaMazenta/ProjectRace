@@ -23,7 +23,7 @@ import java.util.UUID;
 @EventListener
 public class VampireListener implements Listener {
 
-    private final String VAMPIRE_SKILL_ENGINE = "vampire_skill_engine";
+    public final String VAMPIRE_SKILL_ENERGY = "vampire_skill_energy";
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void commonSuck(EntityDamageByEntityEvent event) {
@@ -111,12 +111,12 @@ public class VampireListener implements Listener {
             return;
         }
         Map<String, Object> raceArgs = event.playerRace().raceArgs();
-        if (raceArgs.containsKey(VAMPIRE_SKILL_ENGINE)) {
-            double value = (double) raceArgs.get(VAMPIRE_SKILL_ENGINE);
+        if (raceArgs.containsKey(VAMPIRE_SKILL_ENERGY)) {
+            double value = (double) raceArgs.get(VAMPIRE_SKILL_ENERGY);
             value += event.raceAmount();
-            raceArgs.put(VAMPIRE_SKILL_ENGINE, value);
+            raceArgs.put(VAMPIRE_SKILL_ENERGY, value);
         } else {
-            raceArgs.put(VAMPIRE_SKILL_ENGINE, event.raceAmount());
+            raceArgs.put(VAMPIRE_SKILL_ENERGY, event.raceAmount());
         }
         //TODO 能量充满后,如何使用技能
     }

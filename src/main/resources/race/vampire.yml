@@ -1,0 +1,104 @@
+name: "&d吸血鬼"
+max-level: 10
+attribute-modifiers:
+  max-health:
+    0: 0
+    1: 2
+    2: 4
+    3: 6
+    4: 8
+    5: 10
+    6: 12
+    7: 14
+    8: 16
+    9: 18
+    10: 20
+sucking-rate:
+  0: 0.25
+  1: 0.26
+  2: 0.27
+  3: 0.28
+  4: 0.29
+  5: 0.3
+  6: 0.31
+  7: 0.32
+  8: 0.33
+  9: 0.34
+  10: 0.35
+#升级所需经验
+level-up-exp:
+  0: 110
+  1: 120
+  2: 130
+  3: 140
+  4: 150
+  5: 160
+  6: 170
+  7: 180
+  8: 190
+  9: 200
+night-effects:
+  - 'night_vision,0,220'
+  - 'strength,0,40'
+  - 'speed,0,40'
+sucking-particle:
+  max-distance: 32
+  fool-level:
+    type: GLOW_SQUID_INK
+    #计算曲线中点坐标使用的参数,会影响曲线效果
+    center-loc-args:
+      x: 0.85
+      y: 0.85
+      z: 0.85
+  health:
+    type: GLOW_SQUID_INK
+    #计算曲线中点坐标使用的参数,会影响曲线效果
+    center-loc-args:
+      x: 0.85
+      y: 0.85
+      z: 0.85
+  saturation:
+    type: GLOW_SQUID_INK
+    #计算曲线中点坐标使用的参数,会影响曲线效果
+    center-loc-args:
+      x: 0.85
+      y: 0.85
+      z: 0.85
+skill:
+  #技能的持续时间,与等级挂钩
+  duration-tick:
+    0: 400
+    1: 420
+    2: 440
+    3: 460
+    4: 480
+    5: 500
+    6: 520
+    7: 540
+    8: 560
+    9: 580
+    10: 600
+  radius:
+    0: 40
+    1: 41
+    2: 42
+    3: 43
+    4: 44
+    5: 45
+    6: 46
+    7: 47
+    8: 48
+    9: 49
+    10: 50
+  wing:
+    step: 0.2
+    shape:
+      - '    ########'
+      - '  #######'
+      - '######'
+      - '###'
+      - ' ##'
+      - '  ##'
+      - '   ##'
+    min-rot-range: 0
+    max-rot-range: 72

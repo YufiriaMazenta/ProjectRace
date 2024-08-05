@@ -1,19 +1,30 @@
 package pers.yufiria.projectrace.race;
 
 import org.apache.logging.log4j.util.BiConsumer;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlotGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pers.yufiria.projectrace.PlayerRace;
 import pers.yufiria.projectrace.RaceManager;
 import pers.yufiria.projectrace.util.AttributeHelper;
 
-import java.util.function.Consumer;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public interface Race {
+
+    NamespacedKey MAX_HEALTH_KEY = new NamespacedKey("projectrace", "race.max_health");
+    NamespacedKey INTERACT_RANGE_KEY = new NamespacedKey("projectrace", "race.interact_range");
+    NamespacedKey SCALE_KEY = new NamespacedKey("projectrace", "race.scale");
+    NamespacedKey ATTACK_DAMAGE_KEY = new NamespacedKey("projectrace", "race.attack_damage");
+    NamespacedKey MOVE_SPEED_KEY = new NamespacedKey("projectrace", "race.move_speed");
 
     /**
      * 种族的识别ID,需要保证唯一性
@@ -30,18 +41,18 @@ public interface Race {
     /**
      * 此种族的最大生命
      */
-    @Nullable AttributeModifier maxHealthModifier(int level);
+    Double maxHealthModifier(int level);
 
-    @Nullable AttributeModifier interactRangeModifier(int level);
+    Double interactRangeModifier(int level);
 
-    @Nullable AttributeModifier scaleModifier(int level);
+    Double scaleModifier(int level);
 
-    @Nullable AttributeModifier attackDamageModifier(int level);
+    Double attackDamageModifier(int level);
+
+    Double moveSpeedModifier(int level);
 
     @Nullable
-    default BiConsumer<Player, PlayerRace> raceTask() {
-        return null;
-    }
+    BiConsumer<Player, PlayerRace> raceTask();
 
     /**
      * 升级所需的经验,返回负数代表此等级无法升级
@@ -66,39 +77,104 @@ public interface Race {
 
         //修改最大生命
         AttributeInstance maxHealthAttr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-        AttributeModifier maxHealthModifier = maxHealthModifier(raceLevel);
+        Double maxHealthModifier = maxHealthModifier(raceLevel);
         if (maxHealthModifier != null) {
             double originMaxHealth = maxHealthAttr.getValue();
             double originHealth = player.getHealth();
             double healthPercent = originHealth / originMaxHealth;
-            AttributeHelper.addAttributeModifier(player, Attribute.GENERIC_MAX_HEALTH, maxHealthModifier);
+            AttributeHelper.addAttributeModifier(
+                player,
+                Attribute.GENERIC_MAX_HEALTH,
+                new AttributeModifier(
+                    MAX_HEALTH_KEY,
+                    maxHealthModifier,
+                    AttributeModifier.Operation.ADD_NUMBER,
+                    EquipmentSlotGroup.ANY
+                )
+            );
             double changedMaxHealth = maxHealthAttr.getValue();
             if (originMaxHealth != changedMaxHealth)
                 player.setHealth(changedMaxHealth * healthPercent);
         }
 
         //触及半径
-        AttributeModifier interactRangeModifier = interactRangeModifier(raceLevel);
+        Double interactRangeModifier = interactRangeModifier(raceLevel);
+
         if (interactRangeModifier != null) {
-            AttributeHelper.addAttributeModifier(player, Attribute.PLAYER_ENTITY_INTERACTION_RANGE, interactRangeModifier);
-            AttributeHelper.addAttributeModifier(player, Attribute.PLAYER_BLOCK_INTERACTION_RANGE, interactRangeModifier);
+            AttributeModifier blockModifier = new AttributeModifier(
+                INTERACT_RANGE_KEY,
+                interactRangeModifier,
+                AttributeModifier.Operation.ADD_NUMBER,
+                EquipmentSlotGroup.ANY
+            );
+            AttributeModifier entityModifier = new AttributeModifier(
+                INTERACT_RANGE_KEY,
+                interactRangeModifier + 1.5,
+                AttributeModifier.Operation.ADD_NUMBER,
+                EquipmentSlotGroup.ANY
+            );
+            AttributeHelper.addAttributeModifier(player, Attribute.PLAYER_ENTITY_INTERACTION_RANGE, entityModifier);
+            AttributeHelper.addAttributeModifier(player, Attribute.PLAYER_BLOCK_INTERACTION_RANGE, blockModifier);
         }
 
         //体型
-        AttributeModifier scaleModifier = scaleModifier(raceLevel);
+        Double scaleModifier = scaleModifier(raceLevel);
         if (scaleModifier != null) {
-            AttributeHelper.addAttributeModifier(player, Attribute.GENERIC_SCALE, scaleModifier);
+            AttributeHelper.addAttributeModifier(
+                player,
+                Attribute.GENERIC_SCALE,
+                new AttributeModifier(
+                    SCALE_KEY,
+                    scaleModifier,
+                    AttributeModifier.Operation.ADD_NUMBER,
+                    EquipmentSlotGroup.ANY
+                )
+            );
         }
 
         //攻击伤害
-        AttributeModifier attackDamageModifier = attackDamageModifier(raceLevel);
+        Double attackDamageModifier = attackDamageModifier(raceLevel);
         if (attackDamageModifier != null) {
-            AttributeHelper.addAttributeModifier(player, Attribute.GENERIC_ATTACK_DAMAGE, attackDamageModifier);
+            AttributeHelper.addAttributeModifier(
+                player,
+                Attribute.GENERIC_ATTACK_DAMAGE,
+                new AttributeModifier(
+                    ATTACK_DAMAGE_KEY,
+                    attackDamageModifier,
+                    AttributeModifier.Operation.ADD_NUMBER,
+                    EquipmentSlotGroup.ANY
+                )
+            );
+        }
+
+        //移速
+        Double moveSpeedModifier = moveSpeedModifier(raceLevel);
+        if (moveSpeedModifier != null) {
+            AttributeHelper.addAttributeModifier(
+                player,
+                Attribute.GENERIC_MOVEMENT_SPEED,
+                new AttributeModifier(
+                    MOVE_SPEED_KEY,
+                    moveSpeedModifier,
+                    AttributeModifier.Operation.ADD_NUMBER,
+                    EquipmentSlotGroup.ANY
+                )
+            );
         }
     }
 
     default void register() {
         RaceManager.INSTANCE.registerRace(this);
+    }
+
+    default Map<Integer, Double> configSection4LevelValueMap(ConfigurationSection config) {
+        Map<Integer, Double> map = new HashMap<>();
+        for (String key : config.getKeys(false)) {
+            int level = Integer.parseInt(key);
+            double value = config.getDouble(key);
+            map.put(level, value);
+        }
+        return map;
     }
 
 }

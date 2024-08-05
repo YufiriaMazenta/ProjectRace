@@ -4,7 +4,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
-import pers.yufiria.projectrace.ProjectRaceBukkit;
+import pers.yufiria.projectrace.config.Configs;
 
 public class AttributeHelper {
 
@@ -15,7 +15,7 @@ public class AttributeHelper {
                 continue;
             }
             for (AttributeModifier modifier : attributeInstance.getModifiers()) {
-                if (modifier.getKey().getNamespace().equalsIgnoreCase(ProjectRaceBukkit.INSTANCE.getDescription().getName())) {
+                if (modifier.getKey().getNamespace().equalsIgnoreCase(Configs.attributeNamespace.value())) {
                     attributeInstance.removeModifier(modifier);
                 }
             }

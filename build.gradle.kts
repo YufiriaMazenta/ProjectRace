@@ -25,8 +25,8 @@ dependencies {
     compileOnly("org.jetbrains:annotations:24.0.1")
     compileOnly("me.clip:placeholderapi:2.11.6")
     compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
-    implementation("com.crypticlib:bukkit:1.0.6")
-    implementation("com.zaxxer:HikariCP:5.1.0")
+    implementation("com.crypticlib:bukkit:${rootProject.findProperty("crypticLibVer")}")
+    implementation("com.crypticlib:common-database:${rootProject.findProperty("crypticLibVer")}")
 }
 
 group = "pers.yufiria"

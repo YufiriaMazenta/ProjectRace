@@ -4,7 +4,7 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.util.Vector;
-import pers.yufiria.projectrace.config.Configs;
+import pers.yufiria.projectrace.config.race.VampireConfig;
 import top.zoyn.particlelib.pobject.bezier.TwoRankBezierCurve;
 
 import java.util.Random;
@@ -20,7 +20,7 @@ public enum VampireParticlePainter {
             return;
         }
         Vector vector = end.clone().subtract(start).toVector();
-        if (vector.length() > Configs.vampireSuckingParticleMaxDistance.value()) {
+        if (vector.length() > VampireConfig.suckingParticleMaxDistance.value()) {
             return;
         }
         Vector multiply = vector.multiply(

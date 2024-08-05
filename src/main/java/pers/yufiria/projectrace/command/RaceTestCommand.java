@@ -2,7 +2,7 @@ package pers.yufiria.projectrace.command;
 
 import crypticlib.chat.BukkitMsgSender;
 import crypticlib.command.BukkitCommand;
-import crypticlib.command.BukkitSubCommand;
+import crypticlib.command.BukkitSubcommand;
 import crypticlib.command.CommandInfo;
 import crypticlib.command.annotation.Command;
 import crypticlib.command.annotation.Subcommand;
@@ -27,7 +27,7 @@ public class RaceTestCommand extends BukkitCommand {
     }
 
     @Subcommand
-    BukkitSubCommand vampireSkill = new BukkitSubCommand("vampireSkill") {
+    BukkitSubcommand vampireSkill = new BukkitSubcommand("vampireSkill") {
         @Override
         public void execute(@NotNull CommandSender commandSender, @NotNull List<String> args) {
             if (!(commandSender instanceof Player player)) {

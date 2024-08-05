@@ -1,7 +1,7 @@
 package pers.yufiria.projectrace.command.sub;
 
 import crypticlib.chat.BukkitMsgSender;
-import crypticlib.command.BukkitSubCommand;
+import crypticlib.command.BukkitSubcommand;
 import crypticlib.command.annotation.Subcommand;
 import crypticlib.perm.PermInfo;
 import org.bukkit.Bukkit;
@@ -17,7 +17,7 @@ import pers.yufiria.projectrace.util.Utils;
 import java.util.List;
 import java.util.Map;
 
-public class RaceExpCommand extends BukkitSubCommand {
+public class RaceExpCommand extends BukkitSubcommand {
 
     public static final RaceExpCommand INSTANCE = new RaceExpCommand();
 
@@ -26,7 +26,7 @@ public class RaceExpCommand extends BukkitSubCommand {
     }
 
     @Subcommand
-    BukkitSubCommand set = new BukkitSubCommand("set") {
+    BukkitSubcommand set = new BukkitSubcommand("set") {
         @Override
         public void execute(@NotNull CommandSender commandSender, @NotNull List<String> args) {
             if (args.isEmpty()) {
@@ -48,7 +48,7 @@ public class RaceExpCommand extends BukkitSubCommand {
     };
 
     @Subcommand
-    BukkitSubCommand give = new BukkitSubCommand("give") {
+    BukkitSubcommand give = new BukkitSubcommand("give") {
         @Override
         public void execute(@NotNull CommandSender commandSender, @NotNull List<String> args) {
             if (args.isEmpty()) {
@@ -69,7 +69,7 @@ public class RaceExpCommand extends BukkitSubCommand {
     };
 
     @Subcommand
-    BukkitSubCommand take = new BukkitSubCommand("take") {
+    BukkitSubcommand take = new BukkitSubcommand("take") {
         @Override
         public void execute(@NotNull CommandSender commandSender, @NotNull List<String> args) {
             if (args.isEmpty()) {

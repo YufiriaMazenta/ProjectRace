@@ -12,19 +12,16 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pers.yufiria.projectrace.PlayerRace;
-import pers.yufiria.projectrace.config.Configs;
+import pers.yufiria.projectrace.config.race.VampireConfig;
 import pers.yufiria.projectrace.event.VampireSuckEvent;
 import pers.yufiria.projectrace.race.Race;
 import pers.yufiria.projectrace.util.EntityHelper;
@@ -40,13 +37,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Vampire implements Race, BukkitEnabler, BukkitReloader {
 
     public static final Vampire INSTANCE = new Vampire();
-    private final NamespacedKey vampireMaxHealthModifierKey = new NamespacedKey("projectrace", id() + ".max_health");
     private final Map<Integer, Double> maxHealthModifierValueMap = new ConcurrentHashMap<>();
     private final List<PotionEffect> nightPotionEffects = new ArrayList<>();
     private final Map<Integer, Double> suckingRateMap = new ConcurrentHashMap<>();
     private final Map<Integer, Double> levelUpExpMap = new ConcurrentHashMap<>();
     private final Map<Integer, Long> skillDurationTickMap = new ConcurrentHashMap<>();
     private final Map<Integer, Double> skillRadiusMap = new ConcurrentHashMap<>();
+
+    private Vampire() {}
 
     @Override
     public @NotNull String id() {
@@ -55,24 +53,18 @@ public class Vampire implements Race, BukkitEnabler, BukkitReloader {
 
     @Override
     public @NotNull String name() {
-        return BukkitTextProcessor.color(Configs.vampireName.value());
+        return BukkitTextProcessor.color(VampireConfig.name.value());
     }
 
     @Override
     public int maxLevel() {
-        return Configs.vampireMaxLevel.value();
+        return VampireConfig.maxLevel.value();
     }
 
     @Override
-    public @Nullable AttributeModifier maxHealthModifier(int level) {
+    public Double maxHealthModifier(int level) {
         if (maxHealthModifierValueMap.containsKey(level)) {
-            double value = maxHealthModifierValueMap.get(level);
-            return new AttributeModifier(
-                vampireMaxHealthModifierKey,
-                value,
-                AttributeModifier.Operation.ADD_NUMBER,
-                EquipmentSlotGroup.ANY
-            );
+            return maxHealthModifierValueMap.get(level);
         } else {
             if (level == 0) {
                 return null;
@@ -82,17 +74,22 @@ public class Vampire implements Race, BukkitEnabler, BukkitReloader {
     }
 
     @Override
-    public @Nullable AttributeModifier interactRangeModifier(int level) {
+    public Double interactRangeModifier(int level) {
         return null;
     }
 
     @Override
-    public @Nullable AttributeModifier scaleModifier(int level) {
+    public Double scaleModifier(int level) {
         return null;
     }
 
     @Override
-    public @Nullable AttributeModifier attackDamageModifier(int level) {
+    public Double attackDamageModifier(int level) {
+        return null;
+    }
+
+    @Override
+    public Double moveSpeedModifier(int level) {
         return null;
     }
 
@@ -187,11 +184,11 @@ public class Vampire implements Race, BukkitEnabler, BukkitReloader {
             VampireParticlePainter.INSTANCE.drawSuckParticle(
                 start,
                 end,
-                Particle.valueOf(Configs.vampireSuckingParticleFoolLevelType.value().toUpperCase()),
-                Configs.vampireSuckingParticleFoodLevelColor.value(),
-                Configs.vampireSuckingParticleFoodLevelCenterLocArgsX.value(),
-                Configs.vampireSuckingParticleFoodLevelCenterLocArgsY.value(),
-                Configs.vampireSuckingParticleFoodLevelCenterLocArgsZ.value()
+                Particle.valueOf(VampireConfig.suckingParticleFoolLevelType.value().toUpperCase()),
+                VampireConfig.suckingParticleFoodLevelColor.value(),
+                VampireConfig.suckingParticleFoodLevelCenterLocArgsX.value(),
+                VampireConfig.suckingParticleFoodLevelCenterLocArgsY.value(),
+                VampireConfig.suckingParticleFoodLevelCenterLocArgsZ.value()
             );
             return;
         }
@@ -208,11 +205,11 @@ public class Vampire implements Race, BukkitEnabler, BukkitReloader {
             VampireParticlePainter.INSTANCE.drawSuckParticle(
                 start,
                 end,
-                Particle.valueOf(Configs.vampireSuckingParticleHealthType.value().toUpperCase()),
-                Configs.vampireSuckingParticleHealthColor.value(),
-                Configs.vampireSuckingParticleHealthCenterLocArgsX.value(),
-                Configs.vampireSuckingParticleHealthCenterLocArgsY.value(),
-                Configs.vampireSuckingParticleHealthCenterLocArgsZ.value()
+                Particle.valueOf(VampireConfig.suckingParticleHealthType.value().toUpperCase()),
+                VampireConfig.suckingParticleHealthColor.value(),
+                VampireConfig.suckingParticleHealthCenterLocArgsX.value(),
+                VampireConfig.suckingParticleHealthCenterLocArgsY.value(),
+                VampireConfig.suckingParticleHealthCenterLocArgsZ.value()
             );
             return;
         }
@@ -228,11 +225,11 @@ public class Vampire implements Race, BukkitEnabler, BukkitReloader {
             VampireParticlePainter.INSTANCE.drawSuckParticle(
                 start,
                 end,
-                Particle.valueOf(Configs.vampireSuckingParticleSaturationType.value().toUpperCase()),
-                Configs.vampireSuckingParticleSaturationColor.value(),
-                Configs.vampireSuckingParticleSaturationCenterLocArgsX.value(),
-                Configs.vampireSuckingParticleSaturationCenterLocArgsY.value(),
-                Configs.vampireSuckingParticleSaturationCenterLocArgsZ.value()
+                Particle.valueOf(VampireConfig.suckingParticleSaturationType.value().toUpperCase()),
+                VampireConfig.suckingParticleSaturationColor.value(),
+                VampireConfig.suckingParticleSaturationCenterLocArgsX.value(),
+                VampireConfig.suckingParticleSaturationCenterLocArgsY.value(),
+                VampireConfig.suckingParticleSaturationCenterLocArgsZ.value()
             );
         }
     }
@@ -246,14 +243,10 @@ public class Vampire implements Race, BukkitEnabler, BukkitReloader {
     @Override
     public void reload(Plugin plugin) {
         maxHealthModifierValueMap.clear();
-        ConfigurationSection maxHealthConfig = Configs.vampireMaxHealthModifier.value();
-        for (String key : maxHealthConfig.getKeys(false)) {
-            int level = Integer.parseInt(key);
-            double value = maxHealthConfig.getDouble(key);
-            maxHealthModifierValueMap.put(level, value);
-        }
+        maxHealthModifierValueMap.putAll(configSection4LevelValueMap(VampireConfig.maxHealthModifier.value()));
+
         nightPotionEffects.clear();
-        for (String effectStr : Configs.vampireNightEffects.value()) {
+        for (String effectStr : VampireConfig.nightEffects.value()) {
             String[] split = effectStr.split(",");
             PotionEffectType effectType = PotionEffectType.getByKey(NamespacedKey.minecraft(split[0].trim()));
             if (effectType == null) {
@@ -276,23 +269,13 @@ public class Vampire implements Race, BukkitEnabler, BukkitReloader {
         }
 
         suckingRateMap.clear();
-        ConfigurationSection suckingRates = Configs.vampireSuckingRate.value();
-        for (String key : suckingRates.getKeys(false)) {
-            int level = Integer.parseInt(key);
-            double rate = suckingRates.getDouble(key);
-            suckingRateMap.put(level, rate);
-        }
+        suckingRateMap.putAll(configSection4LevelValueMap(VampireConfig.suckingRate.value()));
 
         levelUpExpMap.clear();
-        ConfigurationSection levelUpExpConfig = Configs.vampireLevelUpExp.value();
-        for (String key : levelUpExpConfig.getKeys(false)) {
-            int level = Integer.parseInt(key);
-            double exp = levelUpExpConfig.getDouble(key);
-            levelUpExpMap.put(level, exp);
-        }
+        levelUpExpMap.putAll(configSection4LevelValueMap(VampireConfig.levelUpExp.value()));
 
         skillDurationTickMap.clear();
-        ConfigurationSection skillDurationTickConfig = Configs.vampireSkillDurationTick.value();
+        ConfigurationSection skillDurationTickConfig = VampireConfig.skillDurationTick.value();
         for (String key : skillDurationTickConfig.getKeys(false)) {
             int level = Integer.parseInt(key);
             long duration = skillDurationTickConfig.getLong(key);
@@ -300,12 +283,7 @@ public class Vampire implements Race, BukkitEnabler, BukkitReloader {
         }
 
         skillRadiusMap.clear();
-        ConfigurationSection skillRadiusConfig = Configs.vampireSkillRadius.value();
-        for (String key : skillDurationTickConfig.getKeys(false)) {
-            int level = Integer.parseInt(key);
-            double radius = skillRadiusConfig.getDouble(key);
-            skillRadiusMap.put(level, radius);
-        }
+        skillRadiusMap.putAll(configSection4LevelValueMap(VampireConfig.skillRadius.value()));
     }
 
 }

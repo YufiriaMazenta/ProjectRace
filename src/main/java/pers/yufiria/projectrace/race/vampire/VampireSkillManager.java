@@ -2,16 +2,14 @@ package pers.yufiria.projectrace.race.vampire;
 
 import crypticlib.CrypticLibBukkit;
 import crypticlib.scheduler.CrypticLibRunnable;
-import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import pers.yufiria.projectrace.ProjectRaceBukkit;
-import pers.yufiria.projectrace.config.Configs;
+import pers.yufiria.projectrace.config.race.VampireConfig;
 import top.zoyn.particlelib.pobject.Cube;
 import top.zoyn.particlelib.pobject.Wing;
 
@@ -37,18 +35,18 @@ public enum VampireSkillManager {
         Location loc1 = releaseLoc.clone().add(-radius, -radius, -radius);
         Location loc2 = releaseLoc.clone().add(radius, radius, radius);
         Cube cube = new Cube(loc1, loc2);
-        cube.setColor(Configs.vampireSkillAreaCubeColor.value());
-        cube.setStep(Configs.vampireSkillAreaCubeStep.value());
+        cube.setColor(VampireConfig.skillAreaCubeColor.value());
+        cube.setStep(VampireConfig.skillAreaCubeStep.value());
         cube.alwaysShowAsync();
         suckingCubeMap.put(uuid, cube);
         Wing wing = new Wing(
             releaseLoc,
-            Configs.vampireSkillWingShape.value(),
-            Configs.vampireSkillWingMinRotRange.value(),
-            Configs.vampireSkillWingMaxRotRange.value(),
-            Configs.vampireSkillWingStep.value()
+            VampireConfig.skillWingShape.value(),
+            VampireConfig.skillWingMinRotRange.value(),
+            VampireConfig.skillWingMaxRotRange.value(),
+            VampireConfig.skillWingStep.value()
         );
-        wing.setColor(Configs.vampireSkillWingColor.value());
+        wing.setColor(VampireConfig.skillWingColor.value());
         wing.setSwing(true);
         wing.attachEntity(vampire);
         wing.alwaysShowAsync();
