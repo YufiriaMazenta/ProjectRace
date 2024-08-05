@@ -6,7 +6,6 @@ import crypticlib.lifecycle.annotation.OnEnable;
 import crypticlib.lifecycle.annotation.OnReload;
 import org.apache.logging.log4j.util.BiConsumer;
 import org.bukkit.GameMode;
-import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import pers.yufiria.projectrace.PlayerRace;
 import pers.yufiria.projectrace.config.race.FairyConfig;
 import pers.yufiria.projectrace.race.Race;
-import top.zoyn.particlelib.pobject.Circle;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -58,23 +56,18 @@ public class Fairy implements Race, BukkitEnabler, BukkitReloader {
     }
 
     @Override
-    public Double interactRangeModifier(int level) {
-        return FairyConfig.interactRangeModifier.value();
+    public Double blockInteractRangeModifier(int level) {
+        return FairyConfig.blockInteractRangeModifier.value();
+    }
+
+    @Override
+    public Double entityInteractRangeModifier(int level) {
+        return FairyConfig.entityInteractRangeModifier.value();
     }
 
     @Override
     public Double scaleModifier(int level) {
         return FairyConfig.scaleModifier.value();
-    }
-
-    @Override
-    public Double attackDamageModifier(int level) {
-        return null;
-    }
-
-    @Override
-    public Double moveSpeedModifier(int level) {
-        return null;
     }
 
     @Override

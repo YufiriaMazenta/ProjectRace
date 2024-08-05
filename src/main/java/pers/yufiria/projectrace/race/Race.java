@@ -15,7 +15,6 @@ import pers.yufiria.projectrace.RaceManager;
 import pers.yufiria.projectrace.util.AttributeHelper;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public interface Race {
@@ -41,15 +40,17 @@ public interface Race {
     /**
      * 此种族的最大生命
      */
-    Double maxHealthModifier(int level);
+    default Double maxHealthModifier(int level) {return null;}
 
-    Double interactRangeModifier(int level);
+    default Double blockInteractRangeModifier(int level) {return null;}
 
-    Double scaleModifier(int level);
+    default Double entityInteractRangeModifier(int level) {return null;}
 
-    Double attackDamageModifier(int level);
+    default Double scaleModifier(int level) {return null;}
 
-    Double moveSpeedModifier(int level);
+    default Double attackDamageModifier(int level) {return null;}
+
+    default Double moveSpeedModifier(int level) {return null;}
 
     @Nullable
     BiConsumer<Player, PlayerRace> raceTask();
@@ -98,23 +99,25 @@ public interface Race {
         }
 
         //触及半径
-        Double interactRangeModifier = interactRangeModifier(raceLevel);
-
-        if (interactRangeModifier != null) {
+        Double blockInteractRangeModifier = blockInteractRangeModifier(raceLevel);
+        if (blockInteractRangeModifier != null) {
             AttributeModifier blockModifier = new AttributeModifier(
                 INTERACT_RANGE_KEY,
-                interactRangeModifier,
+                blockInteractRangeModifier,
                 AttributeModifier.Operation.ADD_NUMBER,
                 EquipmentSlotGroup.ANY
             );
+            AttributeHelper.addAttributeModifier(player, Attribute.PLAYER_BLOCK_INTERACTION_RANGE, blockModifier);
+        }
+        Double entityInteractRangeModifier = entityInteractRangeModifier(raceLevel);
+        if (entityInteractRangeModifier != null) {
             AttributeModifier entityModifier = new AttributeModifier(
                 INTERACT_RANGE_KEY,
-                interactRangeModifier + 1.5,
+                entityInteractRangeModifier,
                 AttributeModifier.Operation.ADD_NUMBER,
                 EquipmentSlotGroup.ANY
             );
             AttributeHelper.addAttributeModifier(player, Attribute.PLAYER_ENTITY_INTERACTION_RANGE, entityModifier);
-            AttributeHelper.addAttributeModifier(player, Attribute.PLAYER_BLOCK_INTERACTION_RANGE, blockModifier);
         }
 
         //体型

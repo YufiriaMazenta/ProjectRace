@@ -28,7 +28,8 @@ public class FairyConfig {
         }).get(),
         "妖精的生命提升配置"
     );
-    public static final DoubleConfig interactRangeModifier = new DoubleConfig("attribute-modifiers.interact-range", -3d);
+    public static final DoubleConfig blockInteractRangeModifier = new DoubleConfig("attribute-modifiers.block-interact-range", -1.5d);
+    public static final DoubleConfig entityInteractRangeModifier = new DoubleConfig("attribute-modifiers.entity-interact-range", -1d);
     public static final DoubleConfig scaleModifier = new DoubleConfig("attribute-modifiers.scale", -0.55);
     public static final ConfigSectionConfig levelUpExp = new ConfigSectionConfig(
         "level-up-exp",

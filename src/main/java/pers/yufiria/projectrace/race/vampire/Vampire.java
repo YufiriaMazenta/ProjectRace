@@ -74,26 +74,6 @@ public class Vampire implements Race, BukkitEnabler, BukkitReloader {
     }
 
     @Override
-    public Double interactRangeModifier(int level) {
-        return null;
-    }
-
-    @Override
-    public Double scaleModifier(int level) {
-        return null;
-    }
-
-    @Override
-    public Double attackDamageModifier(int level) {
-        return null;
-    }
-
-    @Override
-    public Double moveSpeedModifier(int level) {
-        return null;
-    }
-
-    @Override
     public @Nullable BiConsumer<Player, PlayerRace> raceTask() {
         return (player, playerRace) -> {
             World world = player.getWorld();
