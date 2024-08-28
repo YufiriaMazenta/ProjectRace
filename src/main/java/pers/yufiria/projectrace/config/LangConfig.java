@@ -76,5 +76,15 @@ public class LangConfig {
         "&8[&3Race&8] &7玩家%player%的种族经验已被修改为%exp%, 修正后等级为%level%",
         "设置种族等级命令成功执行的提示"
     );
+    public static final StringConfig commandResetMissingPlayer = new StringConfig(
+        "command.reset-race.missing-player",
+        "&8[&3Race&8] &7请输入要重置种族的玩家",
+        "重置种族命令未输入玩家的提示"
+    );
+    public static final StringConfig commandResetRaceSuccess = new StringConfig(
+        "command.reset-race.success",
+        "&8[&3Race&8] &7玩家%player%的种族已重置",
+        "重置种族的提示"
+    );
 
 }

@@ -19,4 +19,14 @@ public class PlayerHelper {
         player.setFlySpeed(0.1f);
     }
 
+    public static boolean isOnline(Player player) {
+        if (player == null)
+            return false;
+        return player.isOnline();
+    }
+
+    public static boolean isOffline(Player player) {
+        return !isOnline(player);
+    }
+
 }

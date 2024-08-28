@@ -17,7 +17,6 @@ import pers.yufiria.projectrace.RaceManager;
 import pers.yufiria.projectrace.command.sub.RaceExpCommand;
 import pers.yufiria.projectrace.config.LangConfig;
 import pers.yufiria.projectrace.race.Race;
-import pers.yufiria.projectrace.util.AttributeHelper;
 import pers.yufiria.projectrace.util.PlayerHelper;
 import pers.yufiria.projectrace.util.Utils;
 
@@ -153,5 +152,30 @@ public class RaceCommand extends BukkitCommand {
 
     @Subcommand
     BukkitSubcommand exp = RaceExpCommand.INSTANCE;
+
+    @Subcommand
+    BukkitSubcommand reset = new BukkitSubcommand(
+        CommandInfo.builder()
+            .name("reset")
+            .permission(new PermInfo("race,command.reset"))
+            .build()
+    ) {
+        @Override
+        public void execute(@NotNull CommandSender sender, @NotNull List<String> args) {
+            if (args.isEmpty()) {
+                BukkitMsgSender.INSTANCE.sendMsg(sender, LangConfig.commandResetMissingPlayer.value());
+                return;
+            }
+            String playerName = args.get(0);
+            Player player = Bukkit.getPlayer(playerName);
+            if (PlayerHelper.isOffline(player)) {
+                BukkitMsgSender.INSTANCE.sendMsg(sender, LangConfig.commandPlayerOffline.value());
+                return;
+            }
+            RaceManager.INSTANCE.removePlayerRace(player.getUniqueId());
+            PlayerHelper.resetRaceEffects(player);
+            BukkitMsgSender.INSTANCE.sendMsg(sender, LangConfig.commandResetRaceSuccess.value(), Map.of("%player%", playerName));
+        }
+    };
 
 }

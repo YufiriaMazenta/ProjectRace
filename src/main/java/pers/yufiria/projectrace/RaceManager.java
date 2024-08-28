@@ -18,6 +18,7 @@ import pers.yufiria.projectrace.config.Configs;
 import pers.yufiria.projectrace.data.DataAccessor;
 import pers.yufiria.projectrace.data.impl.YamlDataAccessor;
 import pers.yufiria.projectrace.race.Race;
+import pers.yufiria.projectrace.util.PlayerHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -51,6 +52,11 @@ public enum RaceManager implements BukkitReloader, BukkitEnabler, Listener {
 
     public void removePlayerRaceCache(UUID uuid) {
         playerRaceCacheMap.remove(uuid);
+    }
+
+    public void removePlayerRace(UUID uuid) {
+        removePlayerRaceCache(uuid);
+        dataAccessor.removePlayerRace(uuid);
     }
 
     @Nullable
